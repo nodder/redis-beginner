@@ -1,6 +1,8 @@
 # Redis Study Through a Bookshop Spring project
 
-Redis Study Through a Bookshop Spring project
+
+The study is completed in 201709.
+
 
 ```
        .-------------.       .    .   *       *   
