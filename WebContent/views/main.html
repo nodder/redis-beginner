@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="layout/content">
+ <head>
+     <meta charset="utf-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <!-- <link rel="stylesheet" href="../assets/plugins/echarts/example/stylesheets/main.css">
+    <link th:include="layout/resources::head_common" th:remove="tag" />
+    <link rel="stylesheet" href="../assets/plugins/datatables/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="../assets/plugins/datatables/extensions/Select/css/select.bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/plugins/datetimepicker/bootstrap-datetimepicker.min.css"> -->
+    <!-- <link rel="stylesheet" href="../assets/plugins/select2/select2.min.css"/>
+    <link rel="stylesheet" href="../assets/plugins/fancytree/src/skin-lion/ui.fancytree.css">
+    <link rel="stylesheet" href="../assets/plugins/fancytree/src/skin-bootstrap/ui.fancytree.css">
+    <link rel="stylesheet" href="../assets/plugins/fancytree/lib/contextmenu-abs/jquery.contextMenu.css">
+    <link rel="stylesheet" href="../assets/plugins/fancytree/lib/prettify.css"> -->
+  
+ </head>
+ <body>
+    
+    <section class="content-header">
+        <strong>图书列表</strong>
+    </section>
+    
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12" >
+                <div class="box box-info">                    
+                    <div class="box-header with-border">
+                        <div class="col-xs-5"></div>
+                        <div class="col-xs-2"  style="text-align: center;min-width:100px;">
+                                <button type="button" id="queryButton" class="btn btn-block btn-success btn-sm">
+                                    <i class="fa fa-search"></i>&nbsp;&nbsp;查询
+                                </button>
+                        </div>
+                        
+                        <div class="col-xs-2"  style="text-align: left;min-width:100px;">
+                                <button type="button" id="queryByPrice" class="btn btn-block btn-success btn-sm">
+                                    <i class="fa fa-search"></i>&nbsp;&nbsp;按价格排序
+                                </button>
+                        </div>
+                    </div>
+                    
+                    <div class="box-header with-border">
+                        <div class="box box-info">
+		                    <table id="tab" class="table table-bordered table-striped table-condensed" style="width:80%;">
+		                        <thead>
+		                            <tr>
+		                                <th>封面</th>
+		                                <th>书名</th>
+		                                <th>价格</th>
+		                                <th>出版社</th>
+		                            </tr>
+		                        </thead>
+		                    </table>
+		                </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </section>
+
+
+    <script type="text/javascript" src="../js/jquery.js"></script> 
+   <!--  <script type="text/javascript" src="../assets/plugins/echarts/example/Scripts/bootstrap.js"></script>  -->
+<!--     <script type="text/javascript" src="../assets/plugins/echarts/example/Scripts/echarts-all-3.js"></script>
+    <script type="text/javascript" src="../assets/plugins/echarts/example/Scripts/echarts.js"></script> -->
+     
+    <!--   <script th:inline="javascript">
+        var contextPath = [[${#httpServletRequest.getContextPath()}]] + "/";
+        </script> -->
+    <script type="text/javascript" charset="utf-8">
+    
+    $(document).ready(function(){
+        
+        $('#queryButton').on( 'click', function () {
+            query();
+        });
+        
+        $('#queryByPrice').on( 'click', function () {
+        	queryByPrice();
+        })
+        
+        var isAscend = false;
+        function queryByPrice() {
+        	
+        	isAscend = !isAscend;
+        	
+            var queryCondition = {ascend : isAscend}; 
+   
+             $.ajax({  
+                 url: "querybookbyprice",
+                 type: 'POST',
+                 async: false, 
+                 data: queryCondition,
+
+                 error:function(rtnData){  
+                     alert("访问出错");  
+                 },  
+                 success:function(rtnData){
+                     draw(rtnData);
+                 }});
+        }
+            
+            
+        function query() {
+            var queryCondition = {}; 
+
+              
+             $.ajax({  
+                 url: "querybook",
+                 type: 'POST',
+                 async: false, 
+                 data: queryCondition,
+
+                 error:function(rtnData){  
+                     alert("访问出错");  
+                 },  
+                 success:function(rtnData){
+                     draw(rtnData);
+                 }});
+        }
+        
+        function draw(infos)
+        {
+            var tab = document.getElementById('tab');
+            tab.style.display="";
+            
+            removeAllRows(tab);
+  
+            $.each(infos, function(i, info){
+                var tr  = tab.insertRow();
+                tr.insertCell().innerHTML = " <td rowspan=3><img width=100 height=100 src=\"../pic/" + info.picUrl + "\"/></td>"
+                tr.insertCell().innerHTML = info.name;
+                tr.insertCell().innerHTML = info.price;
+                tr.insertCell().innerHTML = info.press;
+            });
+        }
+        
+        function removeAllRows(tab)
+        {
+             var rowNum=tab.rows.length;
+             for (i=rowNum - 1; i > 0; i--)
+             {
+                 tab.deleteRow(i);
+             }
+        }
+    });
+    </script>
+</body>
+</html>
